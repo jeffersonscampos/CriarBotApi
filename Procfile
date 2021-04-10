@@ -1,1 +1,1 @@
-web: sh setup.sh && python -m spacy download pt-core-news-lg==2.3.0 && streamlit run app.py
+web: gunicorn app:app
