@@ -104,7 +104,7 @@ class Chatbot(Resource):
     		return json.loads(json.dumps(lista)), 200
     		# return json.dumps(questionData, default=json_util.default), 200 # Http Status Code 200 Sucesso.
     	else:
-    		return None, 404 # Http Status Code 404 Não Encontrado.
+    		return json.loads('{"code_user": 0, "code_current": 0, "code_relation": 0, "input": "...", "output": "Desculpe não entendi!" }'), 404 # Http Status Code 404 Não Encontrado.
 
 
 def montar_lista(questionData):
