@@ -59,22 +59,20 @@ class Chatbot(Resource):
     	if(dados['code_relation']):
     		questionData = botQuestions.find({"code_user": dados['code_user'], "code_relation": dados['code_relation']})
     		logging.warning('code_relation: ' + json.dumps(dados['code_relation']))
-    		if(questionData is None):
-    			questionData = botQuestions.find({"code_user": dados['code_user'], "code_relation": 0})
+    		if(montar_lista(questionData) is None or len(montar_lista(questionData)) == 0):
+    			questionData = botQuestions.find({"code_user": dados['code_user']})
     			logging.warning('Entrou aqui!')
     		else:
     			logging.warning('questionData is not None!')
     	else:
-    		questionData = botQuestions.find({"code_user": dados['code_user'], "code_relation": 0})
+    		questionData = botQuestions.find({"code_user": dados['code_user']})
     		logging.warning('Nao veio code_relation!')
 
     	#Filtrando através da question do usuário, aqui deve ser utilizado o SpaCy NLP:
     	#questionData = [item for item in questionData if dados['input'] in item['input']]
 
     	# modelo JSON: registro--> {campo1:'valor'; campo2:'valor'}.
-    	lista = [{campo: registro[campo] for campo in registro if campo != '_id'} for registro in questionData]
-
-    	lista = [{campo: str(registro[campo]) for campo in registro if campo != '_id'} for registro in lista]
+    	lista = montar_lista(questionData)
 
     	#entrada = nlp(json.loads(json.dumps(removerAcentosECaracteresEspeciais(dados['input']))))
     	entrada = str(json.loads(json.dumps(preprocessamento(dados['input']))))
@@ -107,6 +105,12 @@ class Chatbot(Resource):
     		# return json.dumps(questionData, default=json_util.default), 200 # Http Status Code 200 Sucesso.
     	else:
     		return None, 404 # Http Status Code 404 Não Encontrado.
+
+
+def montar_lista(questionData):
+    lista = [{campo: registro[campo] for campo in registro if campo != '_id'} for registro in questionData]
+    lista = [{campo: str(registro[campo]) for campo in registro if campo != '_id'} for registro in lista]
+    return lista
 
 
 def calcula_similaridade_cosseno_nltk(sentenca1, sentenca2):
